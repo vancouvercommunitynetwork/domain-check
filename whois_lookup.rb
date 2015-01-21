@@ -4,6 +4,7 @@ require 'whois'
 #require 'net/dns'
 
 # Script configuration
+DEBUG = FALSE
 DOMAIN_NAMES_FILE = "list_of_vcn_domains"
 DOMAIN_TO_COMPARE = "vcn.bc.ca"
 
@@ -15,6 +16,7 @@ DOMAIN_TO_COMPARE = "vcn.bc.ca"
 def get_name_servers(domain_name)
 
 	whois_ns_list = []
+  #Whois::Client.new(timeout: 1) # note: figure out timeout
 	whois_query = Whois.whois(domain_name.to_s)
 	whois_query.nameservers.each { |ns| whois_ns_list.push(ns.name) }
 
@@ -31,8 +33,16 @@ def compare_name_servers(name_servers, domain_name)
 
   domain_has_ns = FALSE
 
+  if DEBUG == TRUE
+    puts "DOMAIN: " + domain_name
+  end
+
   name_servers.each do |ns|
-    # Note: make hash of vcn.bc.ca and do check in the future
+
+    if DEBUG == TRUE
+      puts "split name server to compare: " + ns.split('.', 2).to_s
+    end
+
     if ns.split('.', 2).last.to_s == DOMAIN_TO_COMPARE 
       domain_has_ns = TRUE
     end
