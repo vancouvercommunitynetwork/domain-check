@@ -7,7 +7,7 @@ require 'whois'
 DEBUG = FALSE
 DOMAIN_NAMES_FILE = "list_of_vcn_domains"
 DOMAIN_TO_COMPARE = "vcn.bc.ca"
-
+WHOIS_LIB_TIMEOUT = 10
 
 #-------------------------------------------------------------#
 # Get a list of nameservers from a whois record               #
@@ -16,9 +16,10 @@ DOMAIN_TO_COMPARE = "vcn.bc.ca"
 def get_name_servers(domain_name)
 
 	whois_ns_list = []
-  #Whois::Client.new(timeout: 1) # note: figure out timeout
-	whois_query = Whois.whois(domain_name.to_s)
-	whois_query.nameservers.each { |ns| whois_ns_list.push(ns.name) }
+  client = Whois::Client.new
+  client.timeout = WHOIS_LIB_TIMEOUT
+  domain_lookup = client.lookup(domain_name.to_s)
+	domain_lookup.nameservers.each { |ns| whois_ns_list.push(ns.name) }
 
 	return whois_ns_list
 
