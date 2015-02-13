@@ -5,9 +5,9 @@ require 'net/dns'
 
 # Script configuration
 DEBUG = FALSE
-DOMAIN_NAMES_FILE = "list_of_vcn_domains"
-DOMAINS_TO_COMPARE = %w(vcn.bc.ca vancouvercommunity.net)
-IP_TO_COMPARE = "207.102.64"
+DOMAIN_NAMES_FILE = "list_of_domains"
+DOMAINS_TO_COMPARE = %w(google.ca yahoo.com)
+IP_TO_COMPARE = "8.8.8.8"
 WHOIS_LIB_TIMEOUT = 10
 
 
