@@ -1,13 +1,46 @@
 #!/home/john/.rvm/rubies/ruby-2.1.3/bin/ruby
 require 'rubygems'
 require 'whois'
-#require 'net/dns'
+require 'net/dns'
 
 # Script configuration
 DEBUG = FALSE
 DOMAIN_NAMES_FILE = "list_of_vcn_domains"
-DOMAIN_TO_COMPARE = "vcn.bc.ca"
+DOMAINS_TO_COMPARE = %w(vcn.bc.ca vancouvercommunity.net)
+IP_TO_COMPARE = "207.102.64"
 WHOIS_LIB_TIMEOUT = 10
+
+
+#-------------------------------------------------------------#
+# Compare ip addresses for domain name with vcn ip            #
+#                                                             #
+# return                                                      #
+#		ip_results[:has_ip] = does domain have a vcn ip addr      #
+#		ip_results[:list] = list of ips associated with domain    #
+#-------------------------------------------------------------#
+
+def domain_has_ip?(domain_name)
+
+
+	has_ip = FALSE
+	list_of_ips = []	
+
+  packet = Resolver(domain_name.to_s)
+  packet.each_address do |ip|
+		if ip.to_s.start_with? IP_TO_COMPARE
+			has_ip = TRUE 
+		end		 
+
+		list_of_ips.push(ip)
+
+  end
+
+	ip_results = { :has_ip => has_ip, :list => list_of_ips}
+
+	return ip_results
+
+
+end
 
 #-------------------------------------------------------------#
 # Get a list of nameservers from a whois record               #
@@ -30,29 +63,47 @@ end
 # there is a match                                            #
 #-------------------------------------------------------------#
 
-def compare_name_servers(name_servers, domain_name)
+def domain_has_ns?(name_servers)
 
   domain_has_ns = FALSE
 
-  if DEBUG == TRUE
-    puts "DOMAIN: " + domain_name
-  end
+	name_servers.each do |ns|
 
-  name_servers.each do |ns|
-
-    if DEBUG == TRUE
-      puts "split name server to compare: " + ns.split('.', 2).to_s
-    end
-
-    if ns.split('.', 2).last.to_s == DOMAIN_TO_COMPARE 
-      domain_has_ns = TRUE
+#   if ns.split('.', 2).last.to_s == DOMAIN_TO_COMPARE 
+  if DOMAINS_TO_COMPARE.include? ns.split('.', 2).last.to_s
+     domain_has_ns = TRUE
     end
 
   end
 
-  if domain_has_ns == FALSE
-    puts domain_name.to_s.chomp + " does not have vcn name servers"
-  end
+	return domain_has_ns
+
+end
+
+#-------------------------------------------------------------#
+# Print table head							                              #
+#-------------------------------------------------------------#
+
+def print_table_head
+
+start_html = <<eos
+<head><title>VCN Domain Check Script 1.0 - Results</title></head>
+  <body>
+    <table border="1">
+      <tr><td>Domain</td><td>Has VCN IP?</td><td>Has VCN Name Server?</td><td>Name Servers</td><td>IP Addresses</td></tr>
+eos
+
+print start_html
+
+end
+
+#-------------------------------------------------------------#
+# Print table end 							                              #
+#-------------------------------------------------------------#
+
+def print_table_end
+
+puts "	</table></body></html>"
 
 end
 
@@ -62,13 +113,53 @@ end
 
 file = File.new(DOMAIN_NAMES_FILE, "r")
 
-while (domain_name = file.gets)
-	name_servers = get_name_servers(domain_name)
-  compare_name_servers(name_servers, domain_name)    
+print_table_head
+
+while (domain = file.gets)
+
+	print "	<tr><td>#{domain.chomp}</td>"
+
+
+	print "<td>" 
+
+	ip_results = domain_has_ip?(domain.to_s.chomp)
+
+
+	#if !domain_has_ip?(domain.to_s.chomp)
+	if ip_results[:has_ip] != TRUE
+		print " no "
+	else
+		print " yes "
+	end
+
+	print "</td><td>"
+
+	name_servers = get_name_servers(domain)
+
+  if !domain_has_ns?(name_servers)
+		print " no "
+	else
+		print " yes "
+	end 
+
+	print "</td><td>"
+	
+	name_servers.each do |ns|
+		print ns + "<br />"
+	end	
+
+	print "</td><td>"
+
+	ip_results[:list].each do |ip|
+		puts ip
+	end
+
+	print "</td></tr>"
+
 end
 
+
+print_table_end
+
 file.close
-
-
-
 
