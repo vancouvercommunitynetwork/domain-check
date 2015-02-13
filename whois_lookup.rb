@@ -15,29 +15,29 @@ WHOIS_LIB_TIMEOUT = 10
 # Compare ip addresses for domain name with vcn ip            #
 #                                                             #
 # return                                                      #
-#		ip_results[:has_ip] = does domain have a vcn ip addr      #
-#		ip_results[:list] = list of ips associated with domain    #
+#   ip_results[:has_ip] = does domain have a vcn ip addr      #
+#   ip_results[:list] = list of ips associated with domain    #
 #-------------------------------------------------------------#
 
 def domain_has_ip?(domain_name)
 
 
-	has_ip = FALSE
-	list_of_ips = []	
+  has_ip = FALSE
+  list_of_ips = []  
 
   packet = Resolver(domain_name.to_s)
   packet.each_address do |ip|
-		if ip.to_s.start_with? IP_TO_COMPARE
-			has_ip = TRUE 
-		end		 
+    if ip.to_s.start_with? IP_TO_COMPARE
+      has_ip = TRUE 
+    end    
 
-		list_of_ips.push(ip)
+    list_of_ips.push(ip)
 
   end
 
-	ip_results = { :has_ip => has_ip, :list => list_of_ips}
+  ip_results = { :has_ip => has_ip, :list => list_of_ips}
 
-	return ip_results
+  return ip_results
 
 
 end
@@ -48,13 +48,13 @@ end
 
 def get_name_servers(domain_name)
 
-	whois_ns_list = []
+  whois_ns_list = []
   client = Whois::Client.new
   client.timeout = WHOIS_LIB_TIMEOUT
   domain_lookup = client.lookup(domain_name.to_s)
-	domain_lookup.nameservers.each { |ns| whois_ns_list.push(ns.name) }
+  domain_lookup.nameservers.each { |ns| whois_ns_list.push(ns.name) }
 
-	return whois_ns_list
+  return whois_ns_list
 
 end
 
@@ -67,7 +67,7 @@ def domain_has_ns?(name_servers)
 
   domain_has_ns = FALSE
 
-	name_servers.each do |ns|
+  name_servers.each do |ns|
 
 #   if ns.split('.', 2).last.to_s == DOMAIN_TO_COMPARE 
   if DOMAINS_TO_COMPARE.include? ns.split('.', 2).last.to_s
@@ -76,12 +76,12 @@ def domain_has_ns?(name_servers)
 
   end
 
-	return domain_has_ns
+  return domain_has_ns
 
 end
 
 #-------------------------------------------------------------#
-# Print table head							                              #
+# Print table head                                            #
 #-------------------------------------------------------------#
 
 def print_table_head
@@ -98,12 +98,12 @@ print start_html
 end
 
 #-------------------------------------------------------------#
-# Print table end 							                              #
+# Print table end                                             #
 #-------------------------------------------------------------#
 
 def print_table_end
 
-puts "	</table></body></html>"
+puts "  </table></body></html>"
 
 end
 
@@ -117,44 +117,44 @@ print_table_head
 
 while (domain = file.gets)
 
-	print "	<tr><td>#{domain.chomp}</td>"
+  print " <tr><td>#{domain.chomp}</td>"
 
 
-	print "<td>" 
+  print "<td>" 
 
-	ip_results = domain_has_ip?(domain.to_s.chomp)
+  ip_results = domain_has_ip?(domain.to_s.chomp)
 
 
-	#if !domain_has_ip?(domain.to_s.chomp)
-	if ip_results[:has_ip] != TRUE
-		print " no "
-	else
-		print " yes "
-	end
+  #if !domain_has_ip?(domain.to_s.chomp)
+  if ip_results[:has_ip] != TRUE
+    print " no "
+  else
+    print " yes "
+  end
 
-	print "</td><td>"
+  print "</td><td>"
 
-	name_servers = get_name_servers(domain)
+  name_servers = get_name_servers(domain)
 
   if !domain_has_ns?(name_servers)
-		print " no "
-	else
-		print " yes "
-	end 
+    print " no "
+  else
+    print " yes "
+  end 
 
-	print "</td><td>"
-	
-	name_servers.each do |ns|
-		print ns + "<br />"
-	end	
+  print "</td><td>"
+  
+  name_servers.each do |ns|
+    print ns + "<br />"
+  end 
 
-	print "</td><td>"
+  print "</td><td>"
 
-	ip_results[:list].each do |ip|
-		puts ip
-	end
+  ip_results[:list].each do |ip|
+    puts ip
+  end
 
-	print "</td></tr>"
+  print "</td></tr>"
 
 end
 
