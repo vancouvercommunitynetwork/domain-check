@@ -1,4 +1,4 @@
-#!/home/john/.rvm/rubies/ruby-2.1.3/bin/ruby
+#!/usr/bin/ruby
 require 'rubygems'
 require 'whois'
 require 'net/dns'
