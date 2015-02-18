@@ -6,13 +6,13 @@ require 'net/dns'
 # Script configuration
 DEBUG = FALSE
 DOMAIN_NAMES_FILE = "list_of_domains"
-DOMAINS_TO_COMPARE = %w(google.ca yahoo.com)
+DOMAINS_TO_COMPARE = %w(vancouvercommunity.net vcn.bc.ca)
 IP_TO_COMPARE = "207.102.64"
 WHOIS_LIB_TIMEOUT = 10
 
 
-NS_OFF = TRUE
-DNS_OFF = FALSE
+NS_OFF = FALSE
+DNS_OFF = TRUE
 
 #-------------------------------------------------------------#
 # Compare ip addresses for domain name with vcn ip            #
@@ -51,13 +51,31 @@ end
 
 def get_name_servers(domain_name)
 
+	retries = 2	
+	whois_ns_list = []
 
+	begin
 
-  whois_ns_list = []
-  client = Whois::Client.new
-  client.timeout = WHOIS_LIB_TIMEOUT
-  domain_lookup = client.lookup(domain_name.to_s)
-  domain_lookup.nameservers.each { |ns| whois_ns_list.push(ns.name) }
+		client = Whois::Client.new
+		client.timeout = WHOIS_LIB_TIMEOUT
+		domain_lookup = client.lookup(domain_name.to_s)
+		domain_lookup.nameservers.each { |ns| whois_ns_list.push(ns.name) }
+
+	rescue
+
+		if retries > 0
+
+			retries -= 1
+			sleep(2)
+			retry
+
+		else
+
+			print " error "				
+
+		end
+
+	end
 
   return whois_ns_list
 
@@ -74,7 +92,6 @@ def domain_has_ns?(name_servers)
 
   name_servers.each do |ns|
 
-#   if ns.split('.', 2).last.to_s == DOMAIN_TO_COMPARE 
   if DOMAINS_TO_COMPARE.include? ns.split('.', 2).last.to_s
      domain_has_ns = TRUE
     end
@@ -152,7 +169,7 @@ while (domain = file.gets)
 		name_servers = get_name_servers(domain)
 
 		if !domain_has_ns?(name_servers)
-			print " no "
+ 			print " no "
 		else
 			print " yes "
 		end
