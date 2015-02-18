@@ -13,6 +13,8 @@ WHOIS_LIB_TIMEOUT = 10
 
 NS_OFF = FALSE
 DNS_OFF = TRUE
+RETRY_NUM = 2 # Number of retries
+RETRY_TIMER = 2 # Pause between retries
 
 #-------------------------------------------------------------#
 # Compare ip addresses for domain name with vcn ip            #
@@ -51,7 +53,7 @@ end
 
 def get_name_servers(domain_name)
 
-	retries = 2	
+	retries = RETRY_NUM	
 	whois_ns_list = []
 
 	begin
@@ -66,7 +68,7 @@ def get_name_servers(domain_name)
 		if retries > 0
 
 			retries -= 1
-			sleep(2)
+			sleep(RETRY_TIMER)
 			retry
 
 		else
