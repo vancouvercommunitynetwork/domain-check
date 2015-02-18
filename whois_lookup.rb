@@ -7,9 +7,12 @@ require 'net/dns'
 DEBUG = FALSE
 DOMAIN_NAMES_FILE = "list_of_domains"
 DOMAINS_TO_COMPARE = %w(google.ca yahoo.com)
-IP_TO_COMPARE = "8.8.8.8"
+IP_TO_COMPARE = "207.102.64"
 WHOIS_LIB_TIMEOUT = 10
 
+
+NS_OFF = TRUE
+DNS_OFF = FALSE
 
 #-------------------------------------------------------------#
 # Compare ip addresses for domain name with vcn ip            #
@@ -47,6 +50,8 @@ end
 #-------------------------------------------------------------#
 
 def get_name_servers(domain_name)
+
+
 
   whois_ns_list = []
   client = Whois::Client.new
@@ -122,37 +127,69 @@ while (domain = file.gets)
 
   print "<td>" 
 
-  ip_results = domain_has_ip?(domain.to_s.chomp)
+	if DNS_OFF == FALSE
+
+		ip_results = domain_has_ip?(domain.to_s.chomp)
+
+		if ip_results[:has_ip] != TRUE
+			print " no "
+		else
+			print " yes "
+		end
+
+	else
+		
+		print " off "	
+
+	end
+
+	print "</td><td>"
 
 
-  #if !domain_has_ip?(domain.to_s.chomp)
-  if ip_results[:has_ip] != TRUE
-    print " no "
-  else
-    print " yes "
-  end
+
+	if NS_OFF == FALSE
+
+		name_servers = get_name_servers(domain)
+
+		if !domain_has_ns?(name_servers)
+			print " no "
+		else
+			print " yes "
+		end
+
+	else
+
+		print " off " 
+
+	end
+
+  print "</td><td>"
+ 
+	if NS_OFF == FALSE
+ 
+		name_servers.each do |ns|
+			print ns + "<br />"
+		end
+
+	else
+			print " off "
+
+	end
+
 
   print "</td><td>"
 
-  name_servers = get_name_servers(domain)
+	if DNS_OFF == FALSE
 
-  if !domain_has_ns?(name_servers)
-    print " no "
-  else
-    print " yes "
-  end 
+		ip_results[:list].each do |ip|
+			puts ip
+		end
 
-  print "</td><td>"
-  
-  name_servers.each do |ns|
-    print ns + "<br />"
-  end 
+	else
+		
+		print " off "
 
-  print "</td><td>"
-
-  ip_results[:list].each do |ip|
-    puts ip
-  end
+	end
 
   print "</td></tr>"
 
