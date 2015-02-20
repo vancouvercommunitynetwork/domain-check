@@ -111,7 +111,13 @@ def domain_has_ns?(name_servers)
 
   domain_has_ns = FALSE
 
+	
+
   name_servers.each do |ns|
+
+	#print "\n\nname server: " + ns + "\n\n"
+
+	ns = ns.downcase
 
   if DOMAINS_TO_COMPARE.include? ns.split('.', 2).last.to_s
      domain_has_ns = TRUE
