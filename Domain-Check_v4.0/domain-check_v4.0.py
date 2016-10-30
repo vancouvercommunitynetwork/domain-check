@@ -37,7 +37,7 @@ ipList_file = get_file_path('ip_list.csv')        #IP list file
 template_file = get_file_path('template.csv')     #empty template file
 LOG_FILENAME = get_file_path('logging.log')       #log file
 VCN_IP_RANGE = get_file_path('vcn_ip_range.csv')  #List with vcn ips
-WHOIS_file = get_file_path('WHOIS.csv')           #List with WHOIS
+WHOIS_file = get_file_path('WHOIS.csv')           #List with WHOIS results
 
 
 # Write log messages to a log file and the console at the same time:
