@@ -118,7 +118,7 @@ def clean_email(email):
                 old = " "                               #String to replase
                 email = str.replace(email, old, new)    #Replace method
     elif "['e-mail:" in email:
-        old = "['e-mail:"                               #string to replase - condition 3.1
+        old = "['e-mail:"                               #String to replase - condition 3.1
         email = str.replace(email, old, new)            #replace method
         if "']" in email:                               #string to replase - condition 3.2
             old = "']"                                  #string to replase
