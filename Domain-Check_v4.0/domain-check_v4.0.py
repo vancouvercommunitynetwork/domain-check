@@ -34,8 +34,8 @@ def get_file_path(fileName):
 
 domainList_file = get_file_path('domains.csv')    #Domain list file
 ipList_file = get_file_path('ip_list.csv')        #IP list file
-template_file = get_file_path('template.csv')     #empty template file
-LOG_FILENAME = get_file_path('logging.log')       #log file
+template_file = get_file_path('template.csv')     #Empty template file
+LOG_FILENAME = get_file_path('logging.log')       #Log file
 VCN_IP_RANGE = get_file_path('vcn_ip_range.csv')  #List with vcn ips
 WHOIS_file = get_file_path('WHOIS.csv')           #List with WHOIS results
 
