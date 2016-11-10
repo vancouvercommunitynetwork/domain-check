@@ -1,0 +1,3 @@
+﻿smtp.gmail.com
+587
+myemail_address@gmail.com
